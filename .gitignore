@@ -1,0 +1,2 @@
+# Retired hook mechanism (replaced by .claude/hooks/guard.sh)
+.githooks/
