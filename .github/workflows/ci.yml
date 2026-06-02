@@ -1,7 +1,13 @@
+# https://github.com/vergil-project/vergil-actions/blob/develop/.github/workflows/README.md
 name: CI
 
 on:
   pull_request:
+  workflow_call:
+    inputs:
+      run-security:
+        type: boolean
+        default: true
 
 permissions:
   contents: read
@@ -11,16 +17,36 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-  common:
-    name: common
-    runs-on: ubuntu-latest
-    container: ghcr.io/vergil-project/prod-base:latest
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v6
+  quality:
+    uses: vergil-project/vergil-actions/.github/workflows/ci-quality.yml@v2.0
+    with:
+      language: shell
+      versions: '["latest"]'
+      container-suffix: base
+      container-tag: 'latest'
 
-      - name: Install vergil-tooling
-        uses: vergil-project/vergil-actions/actions/shared/setup/vergil@v2.0
+  security:
+    uses: vergil-project/vergil-actions/.github/workflows/ci-security.yml@v2.0
+    with:
+      language: shell
+      run-codeql: false
+      run-security: ${{ inputs.run-security != 'false' }}
+      container-suffix: base
+      container-tag: 'latest'
+    permissions:
+      contents: read
+      security-events: write
 
-      - name: Run common quality checks
-        run: vrg-validate --check common
+  # This repository is documentation-only (release-model = "none"): no main
+  # branch and no release process, so there is nothing to version-bump.
+  # The "CI gates" ruleset still lists version / version-bump as a required
+  # check, so we run the job with run-release: false. The inner version-bump
+  # job is then skipped, reporting the required context as a satisfied no-op
+  # without needing an origin/main to diverge from.
+  version:
+    uses: vergil-project/vergil-actions/.github/workflows/ci-version-bump.yml@v2.0
+    with:
+      language: shell
+      run-release: false
+      container-suffix: base
+      container-tag: 'latest'
