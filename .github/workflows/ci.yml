@@ -8,9 +8,6 @@ on:
       run-security:
         type: boolean
         default: true
-      run-release:
-        type: boolean
-        default: true
 
 permissions:
   contents: read
@@ -19,6 +16,8 @@ concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: true
 
+# This repository is documentation-only (release-model = "none"): no main
+# branch and no release process, so there is no ci-version-bump job.
 jobs:
   quality:
     uses: vergil-project/vergil-actions/.github/workflows/ci-quality.yml@v2.0
@@ -33,18 +32,9 @@ jobs:
     with:
       language: shell
       run-codeql: false
-      run-standards: ${{ inputs.run-release != 'false' }}
       run-security: ${{ inputs.run-security != 'false' }}
       container-suffix: base
       container-tag: 'latest'
     permissions:
       contents: read
       security-events: write
-
-  version:
-    uses: vergil-project/vergil-actions/.github/workflows/ci-version-bump.yml@v2.0
-    with:
-      language: shell
-      run-release: ${{ inputs.run-release != 'false' }}
-      container-suffix: base
-      container-tag: 'latest'
