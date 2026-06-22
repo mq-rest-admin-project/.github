@@ -11,6 +11,7 @@ on:
 
 permissions:
   contents: read
+  actions: read
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
@@ -36,6 +37,7 @@ jobs:
     permissions:
       contents: read
       security-events: write
+      actions: read
 
   # This repository is documentation-only (release-model = "none"): no main
   # branch and no release process, so there is nothing to version-bump.
