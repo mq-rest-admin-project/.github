@@ -163,7 +163,7 @@ per-file basis.
 ## License
 
 All mq-rest-admin repositories are licensed under
-[GPL-3.0](https://www.gnu.org/licenses/gpl-3.0.html). By
+[the MIT License](https://opensource.org/licenses/MIT). By
 contributing, you agree that your contributions will be licensed under
 the same terms.
 
